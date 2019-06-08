@@ -41,8 +41,6 @@ function consumeRedirectUrl(req) {
   return url;
 }
 
-app.use("/test", auth(true), (req, res) => res.send("Now I can tell you my secrets!"));
-
 app.use("/logout", (req, res) => {
   res.cookie("token", "", { maxAge: 0, httpOnly: true });
   res.redirect("/login");
@@ -56,7 +54,7 @@ app.get("/login/", (req, res) => {
 
 app.use("/login", express.static("public"));
 
-app.post("/register", (req, res) => {
+/*app.post("/register", (req, res) => {
   try {
     if (!req.body.username || !req.body.password) {
       res.status(400).send();
@@ -74,7 +72,7 @@ app.post("/register", (req, res) => {
     res.status(500).send();
     console.error(err);
   }
-});
+});*/
 
 app.post("/login/validate", async (req, res) => {
   if (!req.body.username || !req.body.password) {
