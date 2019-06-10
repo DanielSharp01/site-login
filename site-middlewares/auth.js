@@ -1,27 +1,31 @@
 const url = require("url");
 const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
 
 function checkToken(req) {
   if (req.cookies.token) {
     try {
       let decoded = jwt.verify(req.cookies.token, process.env.SECRET);
-      if (decoded) return true;
+      if (decoded) return { authed: true, userId: decoded };
     } catch (err) {}
   }
-  return false;
+  return { authed: false };
 }
 
-module.exports = (setRedirect = true) => (req, res, next) => {
-  let authed = checkToken(req);
-  if (authed) {
+function refreshCookie(req, res) {
+  res.cookie("token", req.cookies.token, { maxAge: 4 * 60 * 60 * 1000, overwrite: true });
+}
+
+module.exports = (setRedirect = true, redirect = true) => (req, res, next) => {
+  const { authed, userId } = checkToken(req);
+  req.authed = authed;
+  if (req.authed) {
+    req.userId = mongoose.Types.ObjectId(userId);
+    refreshCookie(req, res);
     return next();
   } else {
-    req.formatUrl = url.format({
-      protocol: req.protocol,
-      host: req.get("host"),
-      pathname: req.originalUrl
-    });
-    if (setRedirect && req.session) req.session.redirectUrl = req.formatUrl;
-    res.redirect("/login");
+    if (setRedirect && req.session) req.session.redirectUrl = req.originalUrl;
+    if (redirect) res.redirect("/login");
+    else return next();
   }
 };

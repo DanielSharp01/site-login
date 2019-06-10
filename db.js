@@ -1,2 +1,6 @@
 const mongoose = require("mongoose");
-mongoose.connect(process.env.MONGOCONN.replace("<APP>", "login"), { useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false });
+module.exports = mongoose.createConnection(process.env.MONGOCONN.replace("<DB>", "accounts"), {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useFindAndModify: false
+});

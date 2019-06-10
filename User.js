@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const connection = require("./db");
 
 const UserSchema = new Schema({
   username: { type: String, required: true, unique: true },
@@ -7,4 +8,4 @@ const UserSchema = new Schema({
   permissions: { type: [String], default: [] }
 });
 
-module.exports = mongoose.model("User", UserSchema);
+module.exports = connection.model("User", UserSchema);

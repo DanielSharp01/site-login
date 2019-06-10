@@ -4,7 +4,7 @@ const fs = require("fs");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
-const db = require("./db");
+const connection = require("./db");
 const User = require("./User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -13,6 +13,7 @@ const port = 3101;
 const app = express();
 
 const auth = require("./site-middlewares/auth");
+const MongoSessionStore = require("connect-mongo")(session);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -20,20 +21,11 @@ app.use(
   session({
     secret: process.env.SECRET,
     resave: true,
-    saveUninitialized: true
+    saveUninitialized: true,
+    store: new MongoSessionStore({ mongooseConnection: connection })
   })
 );
 app.use(cookieParser());
-
-function checkToken(req) {
-  if (req.cookies.token) {
-    try {
-      let decoded = jwt.verify(req.cookies.token, process.env.SECRET);
-      if (decoded) return true;
-    } catch (err) {}
-  }
-  return false;
-}
 
 function consumeRedirectUrl(req) {
   let url = req.session.redirectUrl;
@@ -46,15 +38,15 @@ app.use("/logout", (req, res) => {
   res.redirect("/login");
 });
 
-app.get("/login/", (req, res) => {
+app.get("/login/", auth(false, false), (req, res) => {
   res.setHeader("Content-Type", "text/html");
-  if (checkToken(req)) res.send(fs.readFileSync(path.join(__dirname, "public/logged-in.html"), "utf8"));
+  if (req.authed) res.send(fs.readFileSync(path.join(__dirname, "public/logged-in.html"), "utf8"));
   else res.send(fs.readFileSync(path.join(__dirname, "public/index.html"), "utf8"));
 });
 
 app.use("/login", express.static("public"));
 
-/*app.post("/register", (req, res) => {
+app.post("/register", (req, res) => {
   try {
     if (!req.body.username || !req.body.password) {
       res.status(400).send();
@@ -72,7 +64,7 @@ app.use("/login", express.static("public"));
     res.status(500).send();
     console.error(err);
   }
-});*/
+});
 
 app.post("/login/validate", async (req, res) => {
   if (!req.body.username || !req.body.password) {
@@ -108,7 +100,7 @@ app.post("/login/actual", async (req, res) => {
     }
     bcrypt.compare(req.body.password, user.password, function(err, result) {
       let token = jwt.sign({ id: user._id }, process.env.SECRET);
-      res.cookie("token", token, { maxAge: 1000 * 60 * 30, httpOnly: true });
+      res.cookie("token", token, { maxAge: 4 * 60 * 60 * 1000, httpOnly: true });
       if (result) {
         res.redirect(consumeRedirectUrl(req) || "/login");
       } else res.status(401).send();
