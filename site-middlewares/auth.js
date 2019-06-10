@@ -6,7 +6,7 @@ function checkToken(req) {
   if (req.cookies.token) {
     try {
       let decoded = jwt.verify(req.cookies.token, process.env.SECRET);
-      if (decoded) return { authed: true, userId: decoded };
+      if (decoded) return { authed: true, userId: decoded.id };
     } catch (err) {}
   }
   return { authed: false };
@@ -20,7 +20,7 @@ module.exports = (setRedirect = true, redirect = true) => (req, res, next) => {
   const { authed, userId } = checkToken(req);
   req.authed = authed;
   if (req.authed) {
-    req.userId = mongoose.Types.ObjectId(userId);
+    req.userId = userId;
     refreshCookie(req, res);
     return next();
   } else {
