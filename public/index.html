@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" type="text/css" href="/login/login.css" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,600&display=swap" rel="stylesheet" />
+    <script src="/login/main.js"></script>
+    <title>Login</title>
+  </head>
+  <body>
+    <form method="POST" action="/login/actual">
+      <div id="error">Incorrect credentials!</div>
+      <label for="username">Username</label>
+      <input id="username" type="text" name="username" autocomplete="off" placeholder="Your username" />
+      <label for="password">Password</label>
+      <input id="password" type="password" name="password" autocomplete="off" placeholder="Your password" />
+      <button id="submit-button" disabled type="button">Login</button>
+    </form>
+  </body>
+</html>
