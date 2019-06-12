@@ -12,7 +12,7 @@ body {
 
 body {
   font-family: "Open Sans";
-  background: #0a0f0d;
+  background: #161622;
   color: #efefef;
   font-size: 24px;
   display: flex;
@@ -53,7 +53,7 @@ button {
   font-weight: 600;
   border: none;
   outline: none;
-  background: #093f12;
+  background: #1a5fad;
   border-radius: 24px;
   padding: 6px 16px;
   color: #efefef;
@@ -61,21 +61,22 @@ button {
 }
 
 button:disabled {
-  background: #243627;
+  background: #0f2744;
+  color: #354c69;
 }
 
 button:hover:not(:disabled) {
-  background: #2b9b3d;
+  background: #4487d4;
   cursor: pointer;
 }
 
 button:focus {
-  background: #2b9b3d;
+  background: #4487d4;
   cursor: pointer;
 }
 
 button:active {
-  background: #77bb83;
+  background: #95adc9;
   cursor: pointer;
 }
 
@@ -83,7 +84,7 @@ input {
   margin-top: 12px;
   font-family: "Open Sans";
   font-size: 24px;
-  background: #0d1610;
+  background: #141c27;
   padding: 6px 16px;
   border: none;
   outline: none;
@@ -92,5 +93,5 @@ input {
 }
 
 input::placeholder {
-  color: #1c271f;
+  color: #202730;
 }
