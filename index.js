@@ -125,7 +125,7 @@ app.post("/login/api", async (req, res) => {
     bcrypt.compare(req.body.password, user.password, function(err, result) {
       if (result) {
         let token = jwt.sign({ id: user._id }, process.env.SECRET);
-        res.status(200).send(token);
+        res.status(200).send({ token });
       } else res.status(401).send();
     });
   } catch (err) {
