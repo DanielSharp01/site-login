@@ -99,10 +99,33 @@ app.post("/login/actual", async (req, res) => {
       return;
     }
     bcrypt.compare(req.body.password, user.password, function(err, result) {
-      let token = jwt.sign({ id: user._id }, process.env.SECRET);
-      res.cookie("token", token, { maxAge: 4 * 60 * 60 * 1000, httpOnly: true });
       if (result) {
+        let token = jwt.sign({ id: user._id }, process.env.SECRET);
+        res.cookie("token", token, { maxAge: 24 * 7 * 4 * 60 * 60 * 1000, httpOnly: true }); // 4 week expiry
         res.redirect(consumeRedirectUrl(req) || "/login");
+      } else res.status(401).send();
+    });
+  } catch (err) {
+    res.status(500).send();
+    console.error(err);
+  }
+});
+
+app.post("/login/api", async (req, res) => {
+  if (!req.body.username || !req.body.password) {
+    res.status(400).send();
+    return;
+  }
+  try {
+    let user = await User.findOne({ username: req.body.username });
+    if (!user) {
+      res.status(401).send();
+      return;
+    }
+    bcrypt.compare(req.body.password, user.password, function(err, result) {
+      if (result) {
+        let token = jwt.sign({ id: user._id }, process.env.SECRET);
+        res.status(200).send(token);
       } else res.status(401).send();
     });
   } catch (err) {
