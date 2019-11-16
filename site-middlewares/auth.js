@@ -1,4 +1,3 @@
-const url = require("url");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 
@@ -29,7 +28,7 @@ module.exports = (setRedirect = true, redirect = true) => (req, res, next) => {
   const { authed, userId, withCookie } = checkToken(req);
   req.authed = authed;
   if (req.authed) {
-    req.userId = userId;
+    req.userId = new mongoose.Types.ObjectId(userId);;
     if (withCookie) refreshCookie(req, res);
     return next();
   } else {
