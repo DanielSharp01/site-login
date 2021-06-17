@@ -102,7 +102,7 @@ app.post("/actual", async (req, res) => {
       if (result) {
         let token = jwt.sign({ id: user._id }, process.env.SECRET);
         res.cookie("token", token, { maxAge: 24 * 7 * 4 * 60 * 60 * 1000, httpOnly: true }); // 4 week expiry
-        res.redirect(consumeRedirectUrl(req) || "/login");
+        res.redirect(consumeRedirectUrl(req) || "/");
       } else res.status(401).send();
     });
   } catch (err) {
