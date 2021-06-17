@@ -38,13 +38,13 @@ app.use("/logout", (req, res) => {
   res.redirect("/login");
 });
 
-app.get("/login/", auth(false, false), (req, res) => {
+app.get("/", auth(false, false), (req, res) => {
   res.setHeader("Content-Type", "text/html");
   if (req.authed) res.send(fs.readFileSync(path.join(__dirname, "public/logged-in.html"), "utf8"));
   else res.send(fs.readFileSync(path.join(__dirname, "public/index.html"), "utf8"));
 });
 
-app.use("/login", express.static("public"));
+app.use(express.static("public"));
 
 app.post("/register", (req, res) => {
   try {
@@ -54,7 +54,7 @@ app.post("/register", (req, res) => {
     }
     let user = new User();
     user.username = req.body.username;
-    bcrypt.hash(req.body.password, 10, async function(err, hash) {
+    bcrypt.hash(req.body.password, 10, async function (err, hash) {
       user.password = hash;
       user.permissions = req.body.permissions || [];
       await user.save();
@@ -66,7 +66,7 @@ app.post("/register", (req, res) => {
   }
 });
 
-app.post("/login/validate", async (req, res) => {
+app.post("/validate", async (req, res) => {
   if (!req.body.username || !req.body.password) {
     res.status(400).send();
     return;
@@ -77,7 +77,7 @@ app.post("/login/validate", async (req, res) => {
       res.status(200).send("false");
       return;
     }
-    bcrypt.compare(req.body.password, user.password, function(err, result) {
+    bcrypt.compare(req.body.password, user.password, function (err, result) {
       if (result) res.status(200).send("true");
       else res.status(200).send("false");
     });
@@ -87,7 +87,7 @@ app.post("/login/validate", async (req, res) => {
   }
 });
 
-app.post("/login/actual", async (req, res) => {
+app.post("/actual", async (req, res) => {
   if (!req.body.username || !req.body.password) {
     res.status(400).send();
     return;
@@ -98,7 +98,7 @@ app.post("/login/actual", async (req, res) => {
       res.status(401).send();
       return;
     }
-    bcrypt.compare(req.body.password, user.password, function(err, result) {
+    bcrypt.compare(req.body.password, user.password, function (err, result) {
       if (result) {
         let token = jwt.sign({ id: user._id }, process.env.SECRET);
         res.cookie("token", token, { maxAge: 24 * 7 * 4 * 60 * 60 * 1000, httpOnly: true }); // 4 week expiry
@@ -111,7 +111,7 @@ app.post("/login/actual", async (req, res) => {
   }
 });
 
-app.post("/login/api", async (req, res) => {
+app.post("/api", async (req, res) => {
   if (!req.body.username || !req.body.password) {
     res.status(400).send();
     return;
@@ -122,7 +122,7 @@ app.post("/login/api", async (req, res) => {
       res.status(401).send();
       return;
     }
-    bcrypt.compare(req.body.password, user.password, function(err, result) {
+    bcrypt.compare(req.body.password, user.password, function (err, result) {
       if (result) {
         let token = jwt.sign({ id: user._id }, process.env.SECRET);
         res.status(200).send({ token });

@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (username.value.length == 0 || password.value.length == 0) return;
 
     try {
-      let result = await (await fetch("/login/validate", {
+      let result = await (await fetch("/validate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: `{"username": "${username.value}", "password": "${password.value}"}`
